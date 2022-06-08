@@ -1,0 +1,93 @@
+{% extends 'post/base.html' %}
+{% load static %}
+{% block title %}Post{% endblock %}
+{% block content %}
+     <div class="row" style="margin-top: 15px">
+            <div class="col-md-3">
+                <div class="card card-body" style="border-radius: 15px;">
+                    <img class="profile-pic" src="{{post.upload.url}}" alt="" height="200px" width="auto">
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div id="post">
+                    <h3>{{post.title}}</h3>
+                    <p>{{post.full_text}}</p>
+                    <p>#{{ post.post_tags }}</p>
+                    {{post.user}}
+                    {{post.date}}
+                    {% csrf_token %}
+                    <a class="likes" href="{% url 'blogpost_like' post.id %}" data-href="{% url 'blogpost_like' post.id %}" data-likes="{{ post.get_total_likes }}">Like {{ post.get_total_likes }}</a>
+                </div>
+            </div>
+    <div>
+        <hr>
+        <p>{{ post.comments.all.count }} Comments</p>
+        {% for item in post.comments.all %}
+            <div id="task_list">
+                <div class="card p-3">
+                    <h5>{{ item.name }}</h5>
+                    <p>{{ item.body }}</p>
+                   {{ item.created }}
+                </div>
+            </div>
+            {% endfor %}
+        <hr>
+        <form id="add_form" method="post">
+           {% csrf_token %}
+            {% for field in form %}
+            <p id="body">{{field}}</p>
+            {% endfor %}
+        </form>
+        <button form="add_form" type="submit" id="create_button" data-model-name="{{ user.get_username }}" class="btn btn-primary" style="margin-left: 45%;" data-url="{% url 'detail' post.id %}">Comment</button>
+    </div>
+{% endblock %}
+{% block add_script %}
+<script>
+    $('#create_button').click( function (e) {
+        e.preventDefault()
+        var serializedData = $("#add_form").serialize();
+        var this_ = $(this);
+        var urlcomment = this_.attr('data-url');
+        var username = this_.attr('data-model-name');
+        $.ajax({
+                url: urlcomment,
+                data: serializedData,
+                header: {'X-CSRFToken': '{{ csrf_token }}'},
+                type: 'post',
+                success: function (response) {
+                    $('#task_list').append('<div class="card p-3"><h5>' + username + '</h5><p>' + response.post.body + '</p></div>')
+                    $('textarea[name="body"]').val("")
+                },
+                error: function () {
+                    console.log('Some error...')
+                }
+        })
+    })
+
+</script>
+<script>
+    function updateText(likes, newCount, str){
+        likes.text(str + newCount)
+    }
+    $('.likes').click( function (e) {
+        e.preventDefault();
+        var this_ = $(this)
+        var likeUrl = this_.attr('data-href')
+       // var likeCount = "{{ post.get_total_likes }}"
+        $.ajax({
+            url: likeUrl,
+            method: "get",
+            data: {},
+            success: function (data) {
+                console.log(data);
+                updateText(this_, data.likes_count, 'Like ');
+            }, 
+            error: function (error) {
+                console.log(error)
+                console.log("error")
+            }
+        })
+    })
+</script>
+
+{% endblock %}

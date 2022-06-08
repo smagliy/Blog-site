@@ -1,0 +1,24 @@
+{% extends 'post/base.html' %}
+{% block title %}All posts{% endblock %}
+{% block content %}
+    <div>
+        <h3 style="margin-top: 15px; margin-left: 45%;">Full posts</h3>
+
+        {% for p in post %}
+        <article class="postcard dark blue" style="margin-top: 30px">
+            <div class="row">
+                    <div class="card-body" style="display: flex;">
+                        <img src="{{ p.upload.url }}" alt="photo {{ p.id }}" style="width: auto; height: 200px">
+                        <h5 class="card-title" style="position: absolute; margin-left: 20%;">{{p.title}}</h5>
+                        <p class="card-text" style="position: absolute; margin-left: 17%; margin-right: 19%; margin-top: 2%;">{{p.full_text}}</p>
+                        <p style="position: absolute; margin-left: 17%; margin-right: 17%; margin-top: 10%;">{{p.user}}, {{p.date}}</p>
+                        <a href="{% url 'detail' p.id %}" class="btn btn-primary" style="position: absolute; margin-left: 35%; margin-top: 10%;">Go detail</a>
+                      </div>
+            </div>
+        </article>
+        {% endfor %}
+</div>
+{% endblock %}
+{% block add_script %}
+
+{% endblock %}

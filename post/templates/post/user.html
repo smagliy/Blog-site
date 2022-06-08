@@ -1,0 +1,22 @@
+{% extends 'post/base.html' %}
+{% load static %}
+{% block title %}My account{% endblock %}
+{% block content %}
+    <h4 style="text-align: center;">Details about user's posts</h4>
+
+
+    {% for post in user.post_set.all %}
+        <div id="posts_user" style="margin-top: 20px;">
+            <div class="card p-3">
+                <a href="{% url 'detail' post.id %}" style="text-decoration: none; color: black;">
+                <h5>{{ post }}</h5>
+                <p>Likes: {{ post.get_total_likes }}</p>
+                <p>Comments all: {{ post.comments.all.count }}</p></a>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}
+{% block add_script %}
+{% endblock %}
+
